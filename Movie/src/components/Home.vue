@@ -33,46 +33,28 @@
 </template>
 
 <script lang="ts">
-import {
-computed,
-    defineComponent, ref
-} from 'vue';
-import axios from 'axios';
-const rating = ref(5);
-const computedRating = computed(() => {
-  return Math.min(Math.max(rating.value, 1), 5);
-});
+import { defineComponent } from 'vue';
+import { dummyMovies } from '@/data/dummyData';
+
 export default defineComponent({
     name: 'HomeView',
     data() {
         return {
             name: '',
-            search:'',
-            rating:'',
-            reviews: [] as Array < any > , // Replace 'any' with the appropriate type for your reviews data
+            search: '',
+            rating: '',
+            reviews: dummyMovies
         };
     },
-    async mounted() {
-        try {
-            const result = await axios.get("http://localhost:3002/reviews");
-            this.reviews = result.data;
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    },
-    computed:{
-        filteredReviews():Array<any>{
-            let filtered = this.reviews
-            if(this.search){
-                filtered = this.reviews.filter((item) =>
-                    item.mname.toLowerCase().includes(this.search.toLowerCase())
-                )
-            }
-            return filtered 
+    computed: {
+        filteredReviews() {
+            if (!this.search) return this.reviews;
+            return this.reviews.filter(item =>
+                item.mname.toLowerCase().includes(this.search.toLowerCase())
+            );
         },
     }
 });
-
 </script>
 
 <style>

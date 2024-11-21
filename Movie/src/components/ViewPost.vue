@@ -31,42 +31,31 @@
 </template>
 
 <script lang="ts">
-import axios from 'axios';
-import {
-    defineComponent,
-    onMounted,
-    ref
-} from 'vue';
+import { defineComponent } from 'vue';
+import { dummyMovies } from '@/data/dummyData';
 
 export default defineComponent({
     name: 'PostView',
     data() {
         return {
-            reviews: [] as Array < any > ,
+            reviews: [] as Array<any>,
         };
     },
     methods: {
-        async deletePost(id: number): Promise < void > {
-            try {
-                const result = await axios.delete(`http://localhost:3002/reviews/${id}`);
-                if (result.status === 200) {
-                    this.loadData();
-                }
-                window.confirm("Review Deleted Sucessfully")
-            } catch (error) {
-                console.error('Error deleting post:', error);
-            }
+        deletePost(id: number) {
+            this.reviews = this.reviews.filter(review => review.id !== id);
+            localStorage.setItem('reviews', JSON.stringify(this.reviews));
+            window.confirm("Review Deleted Successfully");
         },
-        async loadData(): Promise < void > {
-            try {
-                const result = await axios.get('http://localhost:3002/reviews');
-                this.reviews = result.data;
-            } catch (error) {
-                console.error('Error loading data:', error);
+        loadData() {
+            const storedReviews = localStorage.getItem('reviews');
+            this.reviews = storedReviews ? JSON.parse(storedReviews) : dummyMovies;
+            if (!storedReviews) {
+                localStorage.setItem('reviews', JSON.stringify(dummyMovies));
             }
         },
     },
-    async mounted() {
+    mounted() {
         this.loadData();
     },
 });

@@ -68,10 +68,8 @@
 </template>
 
 <script lang="ts">
-import {
-    defineComponent
-} from 'vue';
-import axios from 'axios';
+import { defineComponent } from 'vue';
+import { dummyMovies } from '@/data/dummyData';
 
 interface Review {
     mname: string;
@@ -96,14 +94,10 @@ export default defineComponent({
             } as Review,
         };
     },
-    async mounted() {
-        try {
-            const result = await axios.get('http://localhost:3002/reviews/' + this.$route.params.id);
-            console.warn(result.data);
-            this.review = result.data;
-        } catch (error) {
-            console.error("Error fetching review:", error);
-        }
+    mounted() {
+        const reviews = JSON.parse(localStorage.getItem('reviews') || JSON.stringify(dummyMovies));
+        const id = this.$route.params.id;
+        this.review = reviews.find((r: any) => r.id === Number(id)) || this.review;
     },
 });
 </script>

@@ -1,68 +1,77 @@
 <template>
   <div class="shadow">
-      <v-toolbar>
-        <RouterLink to="/" custom v-slot="{navigate}">
-              <v-btn @click="navigate" role="link">
-                  MOVIE REVIEW
-              </v-btn>
-          </RouterLink>
-        <RouterLink to="/profile" custom v-slot="{navigate}">
-              <v-btn @click="navigate" role="link" v-if="loggedin" class="margin5">
-                  Profile
-              </v-btn>
-          </RouterLink>
-          <v-btn @click.prevent="logout()" v-if="loggedin" class="margin6">
-              Logout
-          </v-btn>
-          <RouterLink to="/signup" custom v-slot="{navigate}">
-              <v-btn @click="navigate" role="link" v-if="!loggedin" class="margin7">
-                  Login / SignUp
-              </v-btn>
-          </RouterLink>
-      </v-toolbar>
-      
+    <v-toolbar>
+      <RouterLink to="/" custom v-slot="{ navigate }">
+        <v-btn @click="navigate" role="link"> MOVIE REVIEW </v-btn>
+      </RouterLink>
+      <RouterLink to="/profile" custom v-slot="{ navigate }">
+        <v-btn @click="navigate" role="link" v-if="loggedin" class="margin5">
+          Profile
+        </v-btn>
+      </RouterLink>
+      <v-btn @click.prevent="logout()" v-if="loggedin" class="margin6">
+        Logout
+      </v-btn>
+      <RouterLink to="/signup" custom v-slot="{ navigate }">
+        <v-btn @click="navigate" role="link" v-if="!loggedin" class="margin7">
+          Login / SignUp
+        </v-btn>
+      </RouterLink>
+    </v-toolbar>
   </div>
   <RouterView @update-navbar="updateNavbar"></RouterView>
-  </template>
-
-
+</template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: 'App',
+  name: "App",
   data() {
     return {
-      name: '',
+      name: "",
       loggedin: false,
     };
   },
   methods: {
     logout() {
       localStorage.clear();
+      this.loggedin = false;
       this.$router.push({
-        name: 'home'
+        name: "home",
       });
-      this.updateNavbar();
     },
     updateNavbar() {
-      this.loggedin = !this.loggedin;
+      const userInfo = localStorage.getItem("user-info");
+      this.loggedin = !!userInfo;
+    },
+    checkLoginStatus() {
+      const userInfo = localStorage.getItem("user-info");
+      this.loggedin = !!userInfo;
+    },
+  },
+  mounted() {
+    this.checkLoginStatus();
+  },
+  watch: {
+    $route() {
+      this.checkLoginStatus();
     },
   },
 });
 </script>
 
-
 <style>
-.shadow{
+.shadow {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
-.margin5{
+.margin5 {
   margin-left: 900px;
 }
-.margin7{
+.margin6 {
+  margin-left: 10px;
+}
+.margin7 {
   margin-left: 950px;
 }
 </style>
-

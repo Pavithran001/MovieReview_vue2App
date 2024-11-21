@@ -26,41 +26,45 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import axios from "axios";
+import { dummyUser } from "@/data/dummyData";
+
+interface UserInfo {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+}
 
 export default defineComponent({
   methods: {
     async login() {
-      try {
-        const result = await axios.get(
-          `http://localhost:3002/user?email=${this.email}&password=${this.password}`
+      // First check dummy user
+      if (
+        this.email === dummyUser.email &&
+        this.password === dummyUser.password
+      ) {
+        localStorage.setItem("user-info", JSON.stringify(dummyUser));
+        window.confirm("Login Successful!");
+        this.$emit("update-navbar");
+        this.$router.push({ name: "home" });
+        return;
+      }
+
+      // Check registered users
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      const user = users.find(
+        (u: UserInfo) => u.email === this.email && u.password === this.password
+      );
+
+      if (user) {
+        localStorage.setItem("user-info", JSON.stringify(user));
+        window.confirm("Login Successful!");
+        this.$emit("update-navbar");
+        this.$router.push({ name: "home" });
+      } else {
+        window.confirm(
+          `Invalid credentials! Use ${dummyUser.email} / ${dummyUser.password} or create a new account`
         );
-
-        if (result.status === 200) {
-          localStorage.setItem("user-info", JSON.stringify(result.data[0]));
-          this.$router.push({
-            name: "home",
-          });
-          this.$emit("updateNavbar");
-        }
-        // window.confirm("Loggedin Successfull")
-        // const loggedin = result.data.find((user: { email: string; password: string; }) => user.email === email && user.password === this.password)
-        // if(loggedin){
-        //     window.confirm("Loggedin Successfull")
-        //     this.$router.push({
-        //         name: "home"
-        //     });
-        // }else{
-        //     window.confirm("Enter valid email and password")
-        //     this.$router.push({
-        //         name: "login"
-        //     });
-        // }
-
-        console.log(this.email, this.password);
-      } catch (error) {
-        console.error("Error logging in:", error);
-        // window.confirm("Enter correct email and password")
       }
     },
   },
@@ -69,6 +73,13 @@ export default defineComponent({
       email: "",
       password: "",
     };
+  },
+  mounted() {
+    // Redirect if already logged in
+    const user = localStorage.getItem("user-info");
+    if (user) {
+      this.$router.push({ name: "home" });
+    }
   },
 });
 </script>
