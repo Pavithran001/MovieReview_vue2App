@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-parsing-error -->
 <template>
 <v-container>
     <v-row no-gutters>
@@ -67,18 +68,9 @@
 </v-container>
 </template>
 
-<script lang="ts">
+<script>
 import { defineComponent } from 'vue';
 import { dummyMovies } from '@/data/dummyData';
-
-interface Review {
-    mname: string;
-    myear: string;
-    mimage: string;
-    mdirector: string;
-    mrating: string;
-    mreview: string;
-}
 
 export default defineComponent({
     name: 'ViewDetails',
@@ -91,13 +83,16 @@ export default defineComponent({
                 mdirector: '',
                 mrating: '',
                 mreview: ''
-            } as Review,
+            }
         };
     },
     mounted() {
         const reviews = JSON.parse(localStorage.getItem('reviews') || JSON.stringify(dummyMovies));
         const id = this.$route.params.id;
-        this.review = reviews.find((r: any) => r.id === Number(id)) || this.review;
+        const foundReview = reviews.find(r => r.id === Number(id));
+        if (foundReview) {
+            this.review = foundReview;
+        }
     },
 });
 </script>

@@ -58,41 +58,28 @@
 </v-container>
 </template>
 
-<script lang="ts">
-import {
-    defineComponent
-} from 'vue';
-import axios from 'axios';
-
-interface UserInfo {
-    name: string;
-    email: string;
-    id: number;
-}
+<script>
+import { defineComponent } from 'vue';
 
 export default defineComponent({
-    name: 'ProfileView',
     data() {
         return {
             name: '',
             email: '',
-            id: 0,
-            user: [] as UserInfo[],
-        };
-    },
-    async mounted() {
-        const user = localStorage.getItem('user-info');
-        this.name = JSON.parse(user).name;
-        this.email = JSON.parse(user).email;
-        this.id = JSON.parse(user).id;
-
-        try {
-            const result = await axios.get("http://localhost:3002/user");
-            this.user = result.data;
-        } catch (error) {
-            console.error("Error fetching user data:", error);
+            id: 0
         }
     },
+    mounted() {
+        const userStr = localStorage.getItem("user-info");
+        if (userStr) {
+            const user = JSON.parse(userStr);
+            this.name = user.name;
+            this.email = user.email;
+            this.id = user.id;
+        } else {
+            this.$router.push({ name: "login" });
+        }
+    }
 });
 </script>
 

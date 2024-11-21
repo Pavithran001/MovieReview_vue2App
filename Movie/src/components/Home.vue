@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-parsing-error -->
 <template>
 <v-container>
     <v-row no-gutters>
@@ -32,7 +33,7 @@
 </v-container>
 </template>
 
-<script lang="ts">
+<script>
 import { defineComponent } from 'vue';
 import { dummyMovies } from '@/data/dummyData';
 
